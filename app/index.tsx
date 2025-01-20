@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, Image, StyleSheet, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import colors from './constants/colors';
+import SecureStorage from './services/store';
 
 const SplashScreen = () => {
     const router = useRouter();
@@ -16,9 +17,20 @@ const SplashScreen = () => {
             })
         ).start();
 
-        setTimeout(() => {
-            router.replace('/screens/auth/login');
-        }, 3000);
+        const redirect = async () => {
+            const user = await SecureStorage.getData('user');
+            if(user){
+                setTimeout(() => {
+                    router.replace('/screens/home/users');
+                }, 3000);
+            } else {
+                setTimeout(() => {
+                    router.replace('/screens/auth/login');
+                }, 3000);
+            }
+        }
+
+        redirect();
     }, [rotation, router]);
 
     const rotateInterpolate = rotation.interpolate({

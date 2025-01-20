@@ -1,11 +1,14 @@
 import colors from "@/app/constants/colors";
-import { StyleSheet } from "react-native";
+import { Dimensions, Platform, StyleSheet } from "react-native";
+
+const window = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f9f9f9',
+        backgroundColor: colors.primaryText,
         paddingHorizontal: 15,
+        paddingVertical: 20,
     },
     header: {
         fontSize: 28,
@@ -18,7 +21,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         fontSize: 16,
         elevation: 2,
-        width: "20%"
     },
     card: {
         flexDirection: 'row',
@@ -39,7 +41,7 @@ const styles = StyleSheet.create({
     errorText: {
         width: "100%",
         color: colors.danger,
-        fontSize: 12,
+        fontSize: 14,
         marginBottom: 5,
     },
     avatar: {
@@ -64,9 +66,9 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 20,
         bottom: 20,
-        backgroundColor: '#007BFF',
-        width: 60,
-        height: 60,
+        backgroundColor: colors.primary,
+        width: 100,
+        height: 40,
         borderRadius: 30,
         justifyContent: 'center',
         alignItems: 'center',
@@ -74,17 +76,16 @@ const styles = StyleSheet.create({
     },
     fabText: {
         color: '#fff',
-        fontSize: 28,
+        fontSize: 17,
         fontWeight: 'bold',
     },
     row: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        // justifyContent: 'space-between',
+        width: "100%",
         marginBottom: 10,
     },
     cardContainer: {
-        width: '30%',
         marginBottom: 10,
         marginRight: 10,
     },

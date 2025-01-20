@@ -10,6 +10,9 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  let message = useLocalSearchParams();
+
+  const [success, setSuccess] = useState(message.message || '');
   const [loading, setLoading] = useState(false);
   const [IsFocused, setIsFocused] = useState({
     field: '',
@@ -21,7 +24,6 @@ export default function Login() {
     password: '',
   });
   const router = useRouter();
-  const success = useLocalSearchParams();
 
   const handleFocus = (field: string) => {
     setIsFocused({
@@ -68,6 +70,12 @@ export default function Login() {
   };
 
   const handleLogin = async () => {
+    setErrors({
+      email: '',
+      password: '',
+    });
+    setSuccess('');
+
     setLoading(true);
     if (validate()) {
       console.log('Logging in with', email, password);
@@ -81,17 +89,18 @@ export default function Login() {
           });
 
         } else {
-          console.error('Error signing up:', result.error);
+          console.log('Error signing up:', result.error);
           setError(result.error || '');
         }
       } catch (error: any) {
         setError(error.message);
-        console.error('Error signing up:', error.message);
+        console.log('Error signing up:', error.message);
       }
       setLoading(false);
 
     } else {
       setError('Please fix the errors above.');
+      setLoading(false);
     }
   };
 
@@ -136,11 +145,11 @@ export default function Login() {
           <Text style={[styles.subtitle, { marginBottom: 2 }]}>Forget Password?</Text>
         </TouchableOpacity>
         {error && <Text style={[styles.errorText, { textAlign: 'center' }]}>{error}</Text>}
-        {success && <Text style={[styles.errorText, { textAlign: 'center', color: colors.primary }]}>{success.message}</Text>}
+        {success && <Text style={[styles.errorText, { textAlign: 'center', color: colors.primary }]}>{success}</Text>}
 
-       {loading?  <View>
-        <ActivityIndicator size={'large'} color={colors.primary} />
-       </View>:<TouchableOpacity style={styles.button} onPress={handleLogin}>
+        {loading ? <View>
+          <ActivityIndicator size={'large'} color={colors.primary} />
+        </View> : <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>}
 

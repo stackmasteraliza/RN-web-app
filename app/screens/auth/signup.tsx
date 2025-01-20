@@ -94,6 +94,7 @@ export default function Signup() {
     };
 
     const handleSignup = async () => {
+        setError('');
         setLoading(true);
         if (validate()) {
             console.log('Signing up with', name, email, password);
@@ -108,12 +109,12 @@ export default function Signup() {
                     });
 
                 } else {
-                    console.error('Error signing up:', result.error);
+                    console.log('Error signing up:', result.error);
                     setError(result.error || '');
                 }
             } catch (error: any) {
                 setError(error.message);
-                console.error('Error signing up:', error.message);
+                console.log('Error signing up:', error.message);
             }
             setLoading(false);
         } else {

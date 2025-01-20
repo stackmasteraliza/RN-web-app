@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, Image, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { View, Text, TextInput, FlatList, Image, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Dimensions, useWindowDimensions } from 'react-native';
+import { router, useLocalSearchParams, useRouter } from 'expo-router';
 import firebase from '@/app/firebase/firebaseConfig';
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
 import styles from './styles';
 import colors from '@/app/constants/colors';
 import { deleteUser } from 'firebase/auth';
+import SecureStorage from '@/app/services/store';
 
 const UsersScreen = () => {
     const [users, setUsers] = useState<any[]>([]);
     const [search, setSearch] = useState('');
     const message = useLocalSearchParams();
-    const [success, setSuccess] = useState(message.success || '');
+    const [success, setSuccess] = useState(message.message || '');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
@@ -27,11 +28,14 @@ const UsersScreen = () => {
                 });
                 setUsers(usersList);
             } catch (error) {
-                console.error('Error fetching users: ', error);
+                console.log('Error fetching users: ', error);
                 setError("Unexpected Error Occured, Try relaoding the screen again.");
             } finally {
                 setLoading(false);
             }
+            setTimeout(() => {
+                setSuccess('');
+            }, 3000)
         };
         fetchUsers();
     }, []);
@@ -72,19 +76,20 @@ const UsersScreen = () => {
 
             setSuccess('User deleted successfully!');
         } catch (error) {
-            console.error('Error deleting user: ', error);
+            console.log('Error deleting user: ', error);
             setError('There was an issue deleting the user.');
         } finally {
             setDeletingUserId(null);
         }
     };
+    const { width, height } = useWindowDimensions();
 
     const renderRow = ({ item, index }: any) => {
         if (index % 3 === 0) {
             return (
                 <View style={styles.row}>
                     {filteredUsers.slice(index, index + 3).map((user) => (
-                        <View key={user.id} style={styles.cardContainer}>
+                        <View key={user.id} style={[styles.cardContainer, { width: width > 400 ? "30%" : "100%", }]}>
                             {renderUser({ item: user })}
                         </View>
                     ))}
@@ -94,12 +99,16 @@ const UsersScreen = () => {
         return null;
     };
 
+
+
     return (
-        <View>
-            <View style={{ paddingVertical: 10, flexDirection: 'row', marginBottom: 20, alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.primary, paddingHorizontal: 15 }}>
+        <View style={{
+            height: "100%",
+        }}>
+            <View style={{ paddingVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.primary, paddingHorizontal: 15 }}>
                 <Text style={styles.header}>Users</Text>
                 <TextInput
-                    style={[styles.searchBar, { outlineColor: colors.primary }]}
+                    style={[styles.searchBar, { outlineColor: colors.primary, width: 240 }]}
                     placeholder="Search Users"
                     placeholderTextColor={colors.lightgrey}
                     value={search}
@@ -121,6 +130,12 @@ const UsersScreen = () => {
                     />
                 )}
             </View>
+            <TouchableOpacity style={styles.fab} onPress={async () => {
+                await SecureStorage.removeData('user');
+                router.navigate('/')
+            }}>
+                <Text style={styles.fabText}>Logout</Text>
+            </TouchableOpacity>
         </View>
     );
 };
